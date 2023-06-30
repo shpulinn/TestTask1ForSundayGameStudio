@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class SceneLoader : MonoBehaviour
 {
-    public Slider progressBar;
-    private AsyncOperation operation;
+    [SerializeField] private Slider progressBar;
+    private AsyncOperation _operation;
 
     private void Start()
     {
@@ -14,23 +14,25 @@ public class SceneLoader : MonoBehaviour
 
     public void LoadSceneAsync(string sceneName)
     {
-        operation = SceneManager.LoadSceneAsync(sceneName);
+        _operation = SceneManager.LoadSceneAsync(sceneName);
     }
 
     private void Update()
     {
-        if (operation == null)
+        if (_operation == null)
         {
             return;
         }
 
-        //progressBar.value = operation.progress;
-        progressBar.value = Mathf.Lerp(progressBar.value, operation.progress, Time.deltaTime * 1.5f);
+        // a little delay on loading
+        progressBar.value = Mathf.Lerp(progressBar.value, _operation.progress, Time.deltaTime * 1.5f);
 
-        if (operation.isDone && progressBar.value >= .95f)
+        if (_operation.isDone && progressBar.value >= .95f)
         {
-            // Загрузка завершена, скрываем экран загрузки
+            // hide loading screen on scene successfully loaded
             gameObject.SetActive(false);
+            progressBar.value = 0f;
+            _operation = null;
         }
     }
 }
